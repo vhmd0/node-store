@@ -5,9 +5,6 @@ import { initializeSocketIO } from './socket';
 
 const PORT = process.env.PORT || 3000;
 
-const adminEmail = "dev@email.com";
-const adminPassword = "Dev123";
-
 const startServer = async () => {
   try {
     await prisma.$connect();

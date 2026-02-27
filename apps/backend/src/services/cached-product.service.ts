@@ -1,7 +1,6 @@
-import { prisma } from "../lib/prisma";
 import { logger } from "../utils/logger";
 import { CacheService } from "./cache.service";
-import { CreateProductData, UpdateProductData, PaginationOptions, PaginatedResult } from "./product.service";
+import { CreateProductData, UpdateProductData, PaginatedResult } from "./product.service";
 
 export class CachedProductService {
   private productService: any; // Original product service

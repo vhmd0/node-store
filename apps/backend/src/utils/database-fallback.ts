@@ -1,5 +1,4 @@
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
 
 /**
  * Checks if PostgreSQL is available by attempting to connect
@@ -41,7 +40,7 @@ async function checkPostgresConnection(databaseUrl: string): Promise<boolean> {
       }
     }
   } catch (error) {
-    console.warn('Could not validate PostgreSQL connection:', error.message);
+    console.warn('Could not validate PostgreSQL connection:', (error as Error).message);
     return false;
   }
 }

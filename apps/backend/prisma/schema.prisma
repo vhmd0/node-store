@@ -3,24 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
-
-
-enum Role {
-  USER
-  ADMIN
-}
-
-enum OrderStatus {
-  PENDING
-  PAID
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
 
 model Category {
   id         Int      @id @default(autoincrement())
@@ -66,7 +51,7 @@ model User {
   username   String?  @unique
   email      String   @unique
   password   String
-  role       Role     @default(USER)
+  role       String   @default("USER")
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -130,7 +115,7 @@ model Order {
   billing_address  String
   payment_method   String
   payment_status   String      @default("pending")
-  status           OrderStatus @default(PENDING)
+  status           String      @default("PENDING")
   notes            String?
   created_at       DateTime    @default(now())
   updated_at       DateTime    @updatedAt

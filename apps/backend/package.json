@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "npm run clean && npx dotenv-cli -e .env -- tsx scripts/setup-database.ts && npx dotenv-cli -e .env -- prisma generate --schema=./prisma/schema.prisma && tsc",
+    "clean": "if exist dist rmdir /s /q dist",
     "start": "node dist/server.js",
-    "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "npx biome check src",
     "format": "npx biome format --write src",

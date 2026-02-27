@@ -55,7 +55,7 @@ export class CacheService {
       this.db.get(
         'SELECT value FROM cache WHERE key = ? AND (expires_at IS NULL OR expires_at > ?)',
         [key, Math.floor(Date.now() / 1000)],
-        (err, row) => {
+        (err, row: { value: string } | undefined) => {
           if (err) {
             reject(err);
           } else {

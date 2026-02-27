@@ -336,6 +336,13 @@ export const createOrder = async (req: Request, res: Response) => {
                                 }
                             }
                         }
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            username: true,
+                            email: true
+                        }
                     }
                 }
             });
