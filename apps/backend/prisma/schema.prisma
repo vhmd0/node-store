@@ -6,6 +6,19 @@ datasource db {
   provider = "sqlite"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
 
 model Category {
   id         Int      @id @default(autoincrement())
@@ -35,6 +48,8 @@ model Product {
   cart         Cart[]
   wishlist     Wishlist[]
   orderItems   OrderItem[]
+
+  @@index([category_id])
 }
 
 model Kits {
@@ -51,7 +66,7 @@ model User {
   username   String?  @unique
   email      String   @unique
   password   String
-  role       String   @default("USER")
+  role       Role     @default(USER)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -91,6 +106,8 @@ model Cart {
   product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, product_id])
+  @@index([user_id])
+  @@index([product_id])
 }
 
 model Wishlist {
@@ -102,6 +119,9 @@ model Wishlist {
 
   user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([product_id])
 }
 
 model Order {
@@ -115,7 +135,7 @@ model Order {
   billing_address  String
   payment_method   String
   payment_status   String      @default("pending")
-  status           String      @default("PENDING")
+  status           OrderStatus @default(PENDING)
   notes            String?
   created_at       DateTime    @default(now())
   updated_at       DateTime    @updatedAt
@@ -125,7 +145,6 @@ model Order {
   orderItems OrderItem[]
 
   @@index([user_id])
-  @@index([order_number])
   @@index([status])
   @@index([created_at])
 }

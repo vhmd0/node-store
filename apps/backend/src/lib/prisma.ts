@@ -1,54 +1,23 @@
-import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
+// src/lib/prisma.ts
 import { PrismaClient } from "@prisma/client";
-import * as dotenv from "dotenv";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
 
-dotenv.config();
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-// Load the database URL with fallback
-const connectionString = process.env.DATABASE_URL;
+function createPrismaClient() {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error("DATABASE_URL is not defined in environment variables");
+  }
 
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not defined in environment variables");
+  const adapter = new PrismaLibSql({ url });
+  return new PrismaClient({ adapter });
 }
 
-// Determine if we're using PostgreSQL or SQLite
-const isPostgreSQL = connectionString.includes('postgresql://') || connectionString.includes('postgres://');
-const isSQLite = connectionString.startsWith('file:');
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-let prisma: PrismaClient;
-
-if (isPostgreSQL) {
-  // Use PostgreSQL adapter
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
-
-  const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient;
-  };
-
-  prisma = globalForPrisma.prisma || new PrismaClient({
-    adapter
-  });
-
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = prisma;
-  }
-} else if (isSQLite) {
-  // Use direct SQLite client (no adapter needed)
-  const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient;
-  };
-
-  prisma = globalForPrisma.prisma || new PrismaClient();
-
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = prisma;
-  }
-} else {
-  throw new Error(`Unsupported database type for connection string: ${connectionString}`);
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
 }
-
-export { prisma };
 
 export default prisma;

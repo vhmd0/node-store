@@ -1,134 +1,157 @@
-# Smart S3r - Monorepo
+# Smart S3r — Monorepo
 
-Full-stack e-commerce application with React frontend and Express backend.
+Full-stack e-commerce application with a React frontend and Express backend.
 
-## 🚀 Quick Start
+## 🧰 Prerequisites
+
+Make sure you have these installed before cloning:
+
+- [Node.js](https://nodejs.org/) >= 18
+- [pnpm](https://pnpm.io/installation) — install via `npm install -g pnpm`
+
+---
+
+## 🚀 Getting Started (After Cloning)
+
+### 1. Install dependencies
 
 ```bash
-# Install dependencies (from root)
-npm install
-
-# Start both frontend and backend
-npm run dev
+pnpm install
 ```
 
-This will start:
-- **Backend**: http://localhost:3000
-- **Frontend**: http://localhost:5173
+### 2. Set up environment variables
+
+Copy the example env file into `apps/backend/`:
+
+```bash
+# Create apps/backend/.env with the following content:
+DATABASE_URL="file:./dev.db"
+
+ACCESS_TOKEN_SECRET=your_access_token_secret
+REFRESH_TOKEN_SECRET=your_refresh_token_secret
+
+NODE_ENV=development
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_URL=cloudinary://your_api_key:your_api_secret@your_cloud_name
+```
+
+> **Note:** The `DATABASE_URL` points to a local SQLite file. No external database setup required.
+
+### 3. Push the schema & generate the Prisma client
+
+```bash
+pnpm prisma:push
+```
+
+This will:
+
+- Create the SQLite database file (`apps/backend/prisma/dev.db`)
+- Apply the full schema
+- Generate the Prisma client
+
+### 4. Seed the database
+
+```bash
+pnpm prisma:seed
+```
+
+This will insert:
+
+- ✅ An admin user → `dev@email.com` / `Dev123`
+- ✅ All categories (from `public/categories.json`)
+- ✅ All products (from `public/products.json`)
+
+### 5. Start the development servers
+
+```bash
+pnpm dev
+```
+
+This starts both:
+
+- **Backend** → http://localhost:3000
+- **Frontend** → http://localhost:5173
+
+---
 
 ## 📁 Project Structure
 
 ```
-smarts3r/
+node-store/
 ├── apps/
-│   ├── frontend/          # React + Vite + TypeScript
-│   └── backend/           # Express + Prisma + Supabase
+│   ├── backend/          # Express + Prisma + SQLite
+│   └── frontend/         # React + Vite + TypeScript
 ├── packages/
-│   └── types/             # Shared TypeScript types
-├── package.json           # Root workspace config
+│   └── types/            # Shared TypeScript types
+├── package.json          # Root workspace config (pnpm)
 └── README.md
 ```
 
-## 🔧 Available Scripts
+---
 
-### Root Level (runs both)
-```bash
-npm run dev              # Start frontend + backend simultaneously
-npm run build            # Build both for production
-npm run install:all      # Install all dependencies
-```
+## 🔧 Available Scripts (from root)
 
-### Backend Only
-```bash
-npm run dev:backend      # Start backend dev server
-npm run build:backend    # Build backend
-npm start              # Start production server
-```
+### Development
 
-### Frontend Only
-```bash
-npm run dev:frontend     # Start frontend dev server
-npm run build:frontend   # Build frontend
-```
+| Script              | Description                   |
+| ------------------- | ----------------------------- |
+| `pnpm dev`          | Start both frontend & backend |
+| `pnpm dev:backend`  | Start backend only            |
+| `pnpm dev:frontend` | Start frontend only           |
 
-### Database (Backend)
-```bash
-npm run prisma:generate  # Generate Prisma client
-npm run prisma:push      # Push schema to database
-npm run prisma:studio    # Open Prisma Studio
-npm run setup-db         # Setup database
-```
+### Database
 
-## 🗄️ Database
+| Script                 | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `pnpm prisma:push`     | Apply schema changes to SQLite (no migration files) |
+| `pnpm prisma:migrate`  | Run Prisma migrations                               |
+| `pnpm prisma:generate` | Regenerate the Prisma client                        |
+| `pnpm prisma:seed`     | Seed the database with initial data                 |
+| `pnpm prisma:studio`   | Open Prisma Studio (visual DB browser)              |
 
-This project uses **Supabase** (PostgreSQL).
+### Build & Production
 
-1. Set up your `.env` file in `apps/backend/`:
-```env
-DATABASE_URL="postgresql://postgres:[password]@[host]:[port]/postgres"
-JWT_SECRET="your-secret-key"
-CLOUDINARY_CLOUD_NAME=""
-CLOUDINARY_API_KEY=""
-CLOUDINARY_API_SECRET=""
-```
+| Script       | Description                         |
+| ------------ | ----------------------------------- |
+| `pnpm build` | Build both apps                     |
+| `pnpm start` | Start the production backend server |
 
-2. Run database setup:
-```bash
-npm run setup-db
-```
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-The project is configured for Vercel deployment:
-
-1. **Frontend**: Connect your repo to Vercel, it will auto-detect the Vite app
-2. **Backend**: Deploy as serverless functions (already configured in `vercel.json`)
-
-Both can be deployed from the same monorepo using Vercel's monorepo support.
-
-### Environment Variables for Production
-
-Set these in your Vercel dashboard:
-- `DATABASE_URL` - Supabase connection string
-- `JWT_SECRET` - Secret for JWT tokens
-- `CLOUDINARY_*` - Cloudinary credentials (if using image uploads)
+---
 
 ## 🛠️ Tech Stack
 
 **Frontend:**
-- React 19
-- TypeScript
+
+- React 19 + TypeScript
 - Vite
 - Tailwind CSS
 - Zustand (state management)
 - React Router
-- Axios
 
 **Backend:**
-- Express.js
-- TypeScript
+
+- Express.js + TypeScript
 - Prisma ORM
-- Supabase (PostgreSQL)
+- SQLite (local development)
 - JWT Authentication
 - Cloudinary (image uploads)
 
-## 📝 Notes
-
-- This is an **npm workspaces** monorepo (not NX)
-- Shared types are in `packages/types/` - import with `@smarts3r/types`
-- Backend uses `tsx` for development (hot reload)
-- Frontend uses Vite for fast HMR
+---
 
 ## 🐛 Troubleshooting
 
+**`DATABASE_URL` missing error?**
+Make sure `apps/backend/.env` exists and contains `DATABASE_URL="file:./dev.db"`.
+
+**Prisma client not found?**
+Run `pnpm prisma:generate` to regenerate it.
+
 **Port conflicts?**
-Make sure ports 3000 (backend) and 5173 (frontend) are available.
+Ensure ports `3000` (backend) and `5173` (frontend) are free.
 
-**Database connection issues?**
-Check your `DATABASE_URL` in `apps/backend/.env`
-
-**Frontend can't connect to backend?**
-- Local dev: Frontend proxies to backend automatically
-- Production: Set `VITE_API_URL` environment variable
+**Frontend can't reach backend?**
+In local dev the frontend proxies to the backend automatically via Vite config.
+In production, set the `VITE_API_URL` environment variable.

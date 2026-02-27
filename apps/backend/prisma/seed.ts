@@ -40,7 +40,7 @@ async function seedDatabase() {
   /* -------------------- SKIP CATEGORIES & PRODUCTS IN PRODUCTION -------------------- */
   if (isProduction) {
     console.log("🏭 Production mode: Skipping categories and products seeding");
-    
+
     const userCount = await prisma.user.count();
     console.log("📊 Final DB state:");
     console.log(`- Users: ${userCount}`);
@@ -54,9 +54,9 @@ async function seedDatabase() {
   const categoriesPath = path.join(__dirname, "../public/categories.json");
   const categories = JSON.parse(fs.readFileSync(categoriesPath, "utf8"));
 
+  await prisma.category.deleteMany();
   await prisma.category.createMany({
     data: categories,
-    skipDuplicates: true,
   });
 
   const dbCategories = await prisma.category.findMany();
@@ -93,7 +93,6 @@ async function seedDatabase() {
 
   await prisma.product.createMany({
     data: productsData,
-    skipDuplicates: true,
   });
 
   console.log(`✅ Seeded ${productsData.length} products`);

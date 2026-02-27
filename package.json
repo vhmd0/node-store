@@ -21,7 +21,9 @@
     "prisma:generate": "cd apps/backend && pnpm run prisma:generate",
     "prisma:push": "cd apps/backend && pnpm run prisma:push",
     "prisma:studio": "cd apps/backend && pnpm run prisma:studio",
-    "setup-db": "cd apps/backend && pnpm run setup-db"
+    "setup-db": "cd apps/backend && pnpm run setup-db",
+    "prisma:migrate": "cd apps/backend && pnpm run prisma:migrate",
+    "prisma:seed": "cd apps/backend && pnpm run prisma:seed"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
